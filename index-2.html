@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BroadcastGuard AI – Compliance & Digital Producer Platform</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0c10;
+    --bg2: #111318;
+    --bg3: #181b22;
+    --bg4: #1e2230;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f2f8;
+    --text2: #8a92a8;
+    --text3: #555e74;
+    --accent: #3d7fff;
+    --accent2: #5c9aff;
+    --green: #22c97a;
+    --green2: #0e8f52;
+    --red: #f04e59;
+    --red2: #c23040;
+    --amber: #f5a623;
+    --amber2: #c47e10;
+    --purple: #a47bff;
+    --purple2: #7b52e0;
+    --teal: #1dd5b0;
+    --teal2: #0e9a80;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --sidebar: 220px;
+    --header: 58px;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  .header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: var(--header);
+    background: rgba(10,12,16,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0;
+  }
+  .header-brand {
+    width: var(--sidebar);
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 20px;
+    border-right: 1px solid var(--border);
+    height: 100%;
+    flex-shrink: 0;
+  }
+  .brand-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, #3d7fff, #a47bff);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #fff;
+  }
+  .brand-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .brand-sub { font-size: 10px; color: var(--text3); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 1px; }
+  .header-center { flex: 1; display: flex; align-items: center; gap: 12px; padding: 0 20px; }
+  .live-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(240,78,89,0.12);
+    border: 1px solid rgba(240,78,89,0.25);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px; font-weight: 600; color: var(--red);
+    letter-spacing: 0.08em;
+  }
+  .live-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--red);
+    animation: pulse 1.4s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+  .header-time { font-size: 12px; color: var(--text2); font-family: 'JetBrains Mono', monospace; }
+  .header-right { display: flex; align-items: center; gap: 8px; padding: 0 16px; }
+  .header-btn {
+    width: 34px; height: 34px; border-radius: var(--radius);
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text2); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; transition: all 0.15s;
+    position: relative;
+  }
+  .header-btn:hover { background: var(--bg4); border-color: var(--border2); color: var(--text); }
+  .notif-dot {
+    position: absolute; top: 6px; right: 6px;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--red);
+  }
+  .avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg, #3d7fff, #a47bff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; color: #fff; cursor: pointer;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed; top: var(--header); left: 0; bottom: 0;
+    width: var(--sidebar); z-index: 90;
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 12px 0;
+  }
+  .nav-section { padding: 8px 12px 4px; }
+  .nav-label { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: var(--radius);
+    margin: 1px 8px;
+    color: var(--text2); font-size: 13px; font-weight: 400;
+    cursor: pointer; transition: all 0.12s;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: rgba(61,127,255,0.12); color: var(--accent2); }
+  .nav-item .ti { font-size: 16px; }
+  .nav-badge {
+    margin-left: auto;
+    background: var(--red2); color: #fff;
+    border-radius: 10px; padding: 1px 6px;
+    font-size: 10px; font-weight: 700; min-width: 18px; text-align: center;
+  }
+  .nav-badge.amber { background: var(--amber2); }
+  .nav-badge.green { background: var(--green2); }
+
+  /* MAIN */
+  .main {
+    margin-left: var(--sidebar);
+    margin-top: var(--header);
+    padding: 24px;
+    min-height: calc(100vh - var(--header));
+  }
+
+  /* PAGE SECTIONS */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* GRID */
+  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 20px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin-bottom: 20px; }
+  .grid-main { display: grid; grid-template-columns: 1fr 360px; gap: 14px; margin-bottom: 20px; }
+  .grid-main2 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 20px; }
+
+  /* CARDS */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+  }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .card-title .ti { font-size: 15px; color: var(--text2); }
+  .card-action { font-size: 12px; color: var(--accent2); cursor: pointer; }
+  .card-action:hover { text-decoration: underline; }
+
+  /* METRIC CARDS */
+  .metric-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    cursor: default;
+    transition: border-color 0.15s;
+  }
+  .metric-card:hover { border-color: var(--border2); }
+  .metric-label { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .metric-label .ti { font-size: 14px; }
+  .metric-value { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 6px; font-feature-settings: 'tnum'; }
+  .metric-sub { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
+  .metric-sub.up { color: var(--green); }
+  .metric-sub.down { color: var(--red); }
+
+  /* RISK SCORE */
+  .risk-ring-wrap { display: flex; align-items: center; gap: 20px; }
+  .risk-ring { position: relative; width: 80px; height: 80px; flex-shrink: 0; }
+  .risk-ring svg { transform: rotate(-90deg); }
+  .risk-ring-label {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: var(--text);
+    transform: none;
+  }
+  .risk-ring-sub { font-size: 9px; font-weight: 500; color: var(--text3); margin-top: 1px; }
+
+  /* AGENT STATUS */
+  .agent-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 0; border-bottom: 1px solid var(--border);
+  }
+  .agent-row:last-child { border-bottom: none; }
+  .agent-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0;
+  }
+  .agent-info { flex: 1; }
+  .agent-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .agent-task { font-size: 11px; color: var(--text3); }
+  .agent-status {
+    font-size: 11px; font-weight: 600; padding: 3px 8px;
+    border-radius: 20px; letter-spacing: 0.04em;
+  }
+  .status-active { background: rgba(34,201,122,0.12); color: var(--green); }
+  .status-analyzing { background: rgba(61,127,255,0.12); color: var(--accent2); }
+  .status-idle { background: rgba(85,94,116,0.15); color: var(--text3); }
+  .status-alert { background: rgba(240,78,89,0.12); color: var(--red); }
+
+  /* INCIDENTS */
+  .incident-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 11px 0; border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: background 0.12s;
+    border-radius: var(--radius);
+  }
+  .incident-item:last-child { border-bottom: none; }
+  .incident-item:hover { background: var(--bg3); padding-left: 8px; }
+  .incident-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .dot-red { background: var(--red); box-shadow: 0 0 6px rgba(240,78,89,0.5); }
+  .dot-amber { background: var(--amber); box-shadow: 0 0 6px rgba(245,166,35,0.5); }
+  .dot-green { background: var(--green); }
+  .incident-body { flex: 1; }
+  .incident-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .incident-meta { font-size: 11px; color: var(--text3); }
+  .incident-tag {
+    font-size: 10px; font-weight: 600; padding: 2px 7px;
+    border-radius: 4px; letter-spacing: 0.04em; flex-shrink: 0;
+  }
+  .tag-fcc { background: rgba(240,78,89,0.15); color: var(--red); }
+  .tag-copy { background: rgba(164,123,255,0.15); color: var(--purple); }
+  .tag-ethics { background: rgba(245,166,35,0.15); color: var(--amber); }
+  .tag-eas { background: rgba(61,127,255,0.15); color: var(--accent2); }
+  .tag-ok { background: rgba(34,201,122,0.12); color: var(--green); }
+
+  /* TIMELINE */
+  .timeline-bar-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .timeline-bar-row { display: flex; align-items: center; gap: 10px; }
+  .timeline-bar-label { font-size: 11px; color: var(--text2); width: 80px; flex-shrink: 0; text-align: right; }
+  .timeline-bar-track { flex: 1; height: 8px; background: var(--bg4); border-radius: 4px; overflow: hidden; }
+  .timeline-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+  .timeline-bar-val { font-size: 11px; color: var(--text3); width: 28px; flex-shrink: 0; font-feature-settings:'tnum'; }
+
+  /* STREAM MONITOR */
+  .stream-monitor {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .stream-header {
+    background: var(--bg3);
+    padding: 12px 18px;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .stream-body { padding: 0; font-family: 'JetBrains Mono', monospace; }
+  .stream-log-item {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 7px 18px; border-bottom: 1px solid var(--border);
+    font-size: 12px; animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from { opacity:0; transform: translateX(-6px); } to { opacity:1; transform: none; } }
+  .stream-log-item:last-child { border-bottom: none; }
+  .log-time { color: var(--text3); width: 70px; flex-shrink: 0; }
+  .log-level { width: 70px; flex-shrink: 0; font-weight: 600; font-size: 10px; letter-spacing: 0.06em; }
+  .log-level.info { color: var(--accent2); }
+  .log-level.warn { color: var(--amber); }
+  .log-level.error { color: var(--red); }
+  .log-level.ok { color: var(--green); }
+  .log-msg { color: var(--text2); flex: 1; }
+
+  /* WAVEFORM */
+  .waveform-wrap { position: relative; height: 56px; overflow: hidden; }
+  .waveform-canvas { width: 100%; height: 100%; }
+
+  /* FREQUENCY */
+  .freq-bars { display: flex; align-items: flex-end; gap: 2px; height: 48px; }
+  .freq-bar { flex: 1; border-radius: 2px 2px 0 0; transition: height 0.15s; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    padding: 8px 12px; text-align: left;
+    font-size: 11px; font-weight: 600; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--bg3); }
+
+  /* SCORE BAR */
+  .score-bar { display: flex; align-items: center; gap: 8px; }
+  .score-track { flex: 1; height: 6px; background: var(--bg4); border-radius: 3px; }
+  .score-fill { height: 100%; border-radius: 3px; }
+  .score-num { font-size: 12px; font-weight: 600; color: var(--text); width: 30px; font-feature-settings:'tnum'; }
+
+  /* PAGE TITLE */
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+  .page-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .page-sub { font-size: 13px; color: var(--text3); }
+  .page-actions { display: flex; gap: 8px; }
+  .btn {
+    padding: 8px 14px; border-radius: var(--radius);
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    border: 1px solid var(--border2); background: var(--bg3); color: var(--text2);
+    transition: all 0.14s; text-decoration: none;
+  }
+  .btn:hover { background: var(--bg4); color: var(--text); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: var(--accent2); }
+  .btn.danger { background: rgba(240,78,89,0.12); border-color: rgba(240,78,89,0.3); color: var(--red); }
+
+  /* CHIP */
+  .chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 20px;
+    font-size: 11px; font-weight: 500;
+  }
+
+  /* PROGRESS RING ANIMATION */
+  @keyframes spinProgress { from { stroke-dashoffset: 220; } to { stroke-dashoffset: 0; } }
+
+  /* ALERT BANNER */
+  .alert-banner {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 18px; border-radius: var(--radius-lg);
+    margin-bottom: 16px;
+    border: 1px solid;
+  }
+  .alert-banner.red { background: rgba(240,78,89,0.08); border-color: rgba(240,78,89,0.25); }
+  .alert-banner.amber { background: rgba(245,166,35,0.08); border-color: rgba(245,166,35,0.25); }
+  .alert-banner .ti { font-size: 18px; }
+  .alert-banner.red .ti { color: var(--red); }
+  .alert-banner.amber .ti { color: var(--amber); }
+  .alert-banner-text { flex: 1; font-size: 13px; color: var(--text2); }
+  .alert-banner-text strong { color: var(--text); display: block; margin-bottom: 2px; }
+
+  /* RECOMMENDATION */
+  .rec-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 13px 0; border-bottom: 1px solid var(--border);
+  }
+  .rec-item:last-child { border-bottom: none; }
+  .rec-num {
+    width: 24px; height: 24px; border-radius: 6px;
+    background: rgba(61,127,255,0.12); color: var(--accent2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .rec-body { flex: 1; }
+  .rec-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .rec-desc { font-size: 12px; color: var(--text3); }
+  .rec-actions { display: flex; gap: 6px; margin-top: 8px; }
+
+  /* SCROLL */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+  /* TOOLTIP */
+  [title] { cursor: help; }
+
+  /* FOOTER */
+  .sidebar-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .sidebar-footer-label { font-size: 10px; color: var(--text3); margin-bottom: 6px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .sidebar-footer-station { font-size: 12px; font-weight: 600; color: var(--text2); display: flex; align-items: center; gap: 6px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 1100px) {
+    .grid-4 { grid-template-columns: repeat(2,1fr); }
+    .grid-main { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 800px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .header-brand { width: auto; }
+    .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-brand">
+    <div class="brand-icon"><i class="ti ti-radio" aria-hidden="true"></i></div>
+    <div>
+      <div class="brand-name">BroadcastGuard</div>
+      <div class="brand-sub">AI Platform</div>
+    </div>
+  </div>
+  <div class="header-center">
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    <div class="header-time" id="headerClock">--:--:-- UTC</div>
+    <span style="color:var(--text3);font-size:12px;margin-left:8px;">Monitoring 4 streams · 8 agents active</span>
+  </div>
+  <div class="header-right">
+    <div class="header-btn" title="Search"><i class="ti ti-search" aria-hidden="true"></i></div>
+    <div class="header-btn" title="Notifications" onclick="navigate('incidents')"><i class="ti ti-bell" aria-hidden="true"></i><div class="notif-dot"></div></div>
+    <div class="header-btn" title="Settings" onclick="navigate('settings')"><i class="ti ti-settings" aria-hidden="true"></i></div>
+    <div class="avatar" title="Admin User">AD</div>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="nav-section"><span class="nav-label">Monitor</span></div>
+  <a class="nav-item active" id="nav-dashboard" onclick="navigate('dashboard')">
+    <i class="ti ti-layout-dashboard" aria-hidden="true"></i> Dashboard
+  </a>
+  <a class="nav-item" id="nav-streams" onclick="navigate('streams')">
+    <i class="ti ti-broadcast" aria-hidden="true"></i> Live Streams
+  </a>
+  <a class="nav-item" id="nav-incidents" onclick="navigate('incidents')">
+    <i class="ti ti-alert-triangle" aria-hidden="true"></i> Incidents
+    <span class="nav-badge">7</span>
+  </a>
+
+  <div class="nav-section" style="margin-top:8px;"><span class="nav-label">Compliance</span></div>
+  <a class="nav-item" id="nav-fcc" onclick="navigate('fcc')">
+    <i class="ti ti-shield-check" aria-hidden="true"></i> FCC Monitor
+    <span class="nav-badge">2</span>
+  </a>
+  <a class="nav-item" id="nav-copyright" onclick="navigate('copyright')">
+    <i class="ti ti-copyright" aria-hidden="true"></i> Copyright
+    <span class="nav-badge amber">4</span>
+  </a>
+  <a class="nav-item" id="nav-ethics" onclick="navigate('ethics')">
+    <i class="ti ti-eye-check" aria-hidden="true"></i> Ethical Review
+  </a>
+  <a class="nav-item" id="nav-eas" onclick="navigate('eas')">
+    <i class="ti ti-sos" aria-hidden="true"></i> Emergency (EAS)
+    <span class="nav-badge green">OK</span>
+  </a>
+
+  <div class="nav-section" style="margin-top:8px;"><span class="nav-label">Intelligence</span></div>
+  <a class="nav-item" id="nav-agents" onclick="navigate('agents')">
+    <i class="ti ti-cpu" aria-hidden="true"></i> AI Agents
+  </a>
+  <a class="nav-item" id="nav-reports" onclick="navigate('reports')">
+    <i class="ti ti-file-analytics" aria-hidden="true"></i> Reports
+  </a>
+  <a class="nav-item" id="nav-audit" onclick="navigate('audit')">
+    <i class="ti ti-list-check" aria-hidden="true"></i> Audit Log
+  </a>
+
+  <div class="nav-section" style="margin-top:8px;"><span class="nav-label">Config</span></div>
+  <a class="nav-item" id="nav-settings" onclick="navigate('settings')">
+    <i class="ti ti-adjustments-horizontal" aria-hidden="true"></i> Settings
+  </a>
+
+  <div style="height:80px;"></div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-label">Active Station</div>
+    <div class="sidebar-footer-station"><i class="ti ti-radio-active" style="color:var(--green);font-size:14px;" aria-hidden="true"></i> WXYZ-FM 97.5</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- ===== DASHBOARD PAGE ===== -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Compliance Dashboard</div>
+        <div class="page-sub">Real-time broadcast monitoring · Updated every 3s</div>
+      </div>
+      <div class="page-actions">
+        <button class="btn" onclick="exportReport()"><i class="ti ti-download" aria-hidden="true"></i> Export Report</button>
+        <button class="btn primary"><i class="ti ti-player-play" aria-hidden="true"></i> Start Scan</button>
+      </div>
+    </div>
+
+    <!-- Alert Banner -->
+    <div class="alert-banner red">
+      <i class="ti ti-alert-circle" aria-hidden="true"></i>
+      <div class="alert-banner-text">
+        <strong>Critical: FCC Indecency Violation Detected – Channel 4 (03:47:22 UTC)</strong>
+        Explicit language detected during programming block. Auto-mute applied. Review and document within 24h per FCC §73.3999.
+      </div>
+      <button class="btn danger" style="flex-shrink:0;font-size:11px;" onclick="navigate('incidents')"><i class="ti ti-arrow-right" aria-hidden="true"></i> Review</button>
+    </div>
+
+    <!-- Metric Cards -->
+    <div class="grid-4">
+      <div class="metric-card">
+        <div class="metric-label"><i class="ti ti-shield" aria-hidden="true"></i> Compliance Score</div>
+        <div class="metric-value" style="color:var(--green);">94.2</div>
+        <div class="metric-sub up"><i class="ti ti-arrow-up" aria-hidden="true"></i> +1.8 from yesterday</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Active Violations</div>
+        <div class="metric-value" style="color:var(--red);">7</div>
+        <div class="metric-sub down"><i class="ti ti-arrow-up" aria-hidden="true"></i> +3 in last hour</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label"><i class="ti ti-copyright" aria-hidden="true"></i> Copyright Flags</div>
+        <div class="metric-value" style="color:var(--amber);">12</div>
+        <div class="metric-sub"><i class="ti ti-minus" aria-hidden="true"></i> 3 pending review</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label"><i class="ti ti-eye" aria-hidden="true"></i> Hours Monitored</div>
+        <div class="metric-value">482</div>
+        <div class="metric-sub up"><i class="ti ti-check" aria-hidden="true"></i> 4 streams online</div>
+      </div>
+    </div>
+
+    <div class="grid-main">
+      <!-- Violation Timeline Chart -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-chart-line" aria-hidden="true"></i> Violation Timeline (Last 12 Hours)</div>
+          <select style="font-size:11px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:4px 8px;">
+            <option>All Types</option><option>FCC</option><option>Copyright</option><option>Ethics</option>
+          </select>
+        </div>
+        <div style="position:relative;height:220px;">
+          <canvas id="violationChart" role="img" aria-label="Bar chart showing violations by hour over 12 hours">FCC and copyright violations tracked over time.</canvas>
+        </div>
+      </div>
+
+      <!-- Risk Score -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-gauge" aria-hidden="true"></i> Risk Score</div>
+          <span class="chip" style="background:rgba(240,78,89,0.12);color:var(--red);">High Risk</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0;">
+          <div style="position:relative;width:120px;height:120px;">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="var(--red)" stroke-width="12"
+                stroke-linecap="round"
+                stroke-dasharray="314"
+                stroke-dashoffset="94"
+                transform="rotate(-90 60 60)"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <div style="font-size:26px;font-weight:700;color:var(--text);">70</div>
+              <div style="font-size:10px;color:var(--text3);">/ 100</div>
+            </div>
+          </div>
+          <div style="width:100%;">
+            <div class="timeline-bar-wrap">
+              <div class="timeline-bar-row">
+                <div class="timeline-bar-label" style="color:var(--red);font-size:10px;">FCC Risk</div>
+                <div class="timeline-bar-track"><div class="timeline-bar-fill" style="width:82%;background:var(--red);"></div></div>
+                <div class="timeline-bar-val">82</div>
+              </div>
+              <div class="timeline-bar-row">
+                <div class="timeline-bar-label" style="color:var(--amber);font-size:10px;">Copyright</div>
+                <div class="timeline-bar-track"><div class="timeline-bar-fill" style="width:61%;background:var(--amber);"></div></div>
+                <div class="timeline-bar-val">61</div>
+              </div>
+              <div class="timeline-bar-row">
+                <div class="timeline-bar-label" style="color:var(--purple);font-size:10px;">Ethics</div>
+                <div class="timeline-bar-track"><div class="timeline-bar-fill" style="width:45%;background:var(--purple);"></div></div>
+                <div class="timeline-bar-val">45</div>
+              </div>
+              <div class="timeline-bar-row">
+                <div class="timeline-bar-label" style="color:var(--accent2);font-size:10px;">EAS</div>
+                <div class="timeline-bar-track"><div class="timeline-bar-fill" style="width:22%;background:var(--green);"></div></div>
+                <div class="timeline-bar-val">22</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-main2">
+      <!-- Recent Incidents -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Recent Incidents</div>
+          <span class="card-action" onclick="navigate('incidents')">View all →</span>
+        </div>
+        <div id="incidentList">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <!-- AI Recommendations -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-bulb" aria-hidden="true"></i> AI Recommendations</div>
+          <span class="chip" style="background:rgba(61,127,255,0.12);color:var(--accent2);font-size:10px;">3 new</span>
+        </div>
+        <div>
+          <div class="rec-item">
+            <div class="rec-num">1</div>
+            <div class="rec-body">
+              <div class="rec-title">Replace unlicensed background music</div>
+              <div class="rec-desc">Segment 14:22–14:58 contains ASCAP-tracked audio without valid license.</div>
+              <div class="rec-actions">
+                <button class="btn" style="padding:4px 10px;font-size:11px;">Dismiss</button>
+                <button class="btn primary" style="padding:4px 10px;font-size:11px;">Act Now</button>
+              </div>
+            </div>
+          </div>
+          <div class="rec-item">
+            <div class="rec-num">2</div>
+            <div class="rec-body">
+              <div class="rec-title">File FCC Form 2100 renewal</div>
+              <div class="rec-desc">Station license expires in 28 days. Early filing recommended.</div>
+              <div class="rec-actions">
+                <button class="btn primary" style="padding:4px 10px;font-size:11px;">Schedule</button>
+              </div>
+            </div>
+          </div>
+          <div class="rec-item">
+            <div class="rec-num">3</div>
+            <div class="rec-body">
+              <div class="rec-title">Verify EAS monthly test log</div>
+              <div class="rec-desc">Required monthly EAS test not logged for July cycle.</div>
+              <div class="rec-actions">
+                <button class="btn primary" style="padding:4px 10px;font-size:11px;">Log Test</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agent Status -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><i class="ti ti-cpu" aria-hidden="true"></i> Agent Status</div>
+        <span class="card-action" onclick="navigate('agents')">Manage agents →</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0 24px;">
+        <div id="agentListLeft"></div>
+        <div id="agentListRight"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STREAMS PAGE ===== -->
+  <div class="page" id="page-streams">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Live Stream Monitor</div>
+        <div class="page-sub">Real-time audio/video analysis across all active channels</div>
+      </div>
+      <div class="page-actions">
+        <button class="btn"><i class="ti ti-plus" aria-hidden="true"></i> Add Stream</button>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div id="stream1" class="card" style="border-color:rgba(34,201,122,0.3);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);">WXYZ-FM 97.5 · Studio A</div>
+            <div style="font-size:11px;color:var(--text3);">Live Radio · RTMP · 48kHz/320kbps</div>
+          </div>
+          <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+        </div>
+        <div class="waveform-wrap" style="margin-bottom:10px;">
+          <canvas id="wave1" class="waveform-canvas" aria-label="Audio waveform" style="height:56px;"></canvas>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="chip" style="background:rgba(34,201,122,0.12);color:var(--green);"><i class="ti ti-shield-check" aria-hidden="true"></i> FCC OK</span>
+          <span class="chip" style="background:rgba(245,166,35,0.12);color:var(--amber);"><i class="ti ti-copyright" aria-hidden="true"></i> 1 Flag</span>
+          <span class="chip" style="background:rgba(85,94,116,0.15);color:var(--text3);">Latency: 1.2s</span>
+        </div>
+      </div>
+
+      <div id="stream2" class="card" style="border-color:rgba(240,78,89,0.3);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);">WXYZ-TV Channel 4 · Master</div>
+            <div style="font-size:11px;color:var(--text3);">Live TV · HLS · 1080p30</div>
+          </div>
+          <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+        </div>
+        <div class="waveform-wrap" style="margin-bottom:10px;">
+          <canvas id="wave2" class="waveform-canvas" aria-label="Audio waveform" style="height:56px;"></canvas>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="chip" style="background:rgba(240,78,89,0.12);color:var(--red);"><i class="ti ti-alert-circle" aria-hidden="true"></i> FCC ALERT</span>
+          <span class="chip" style="background:rgba(245,166,35,0.12);color:var(--amber);"><i class="ti ti-copyright" aria-hidden="true"></i> 3 Flags</span>
+          <span class="chip" style="background:rgba(85,94,116,0.15);color:var(--text3);">Latency: 0.8s</span>
+        </div>
+      </div>
+
+      <div id="stream3" class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);">Podcast · The Daily Brief</div>
+            <div style="font-size:11px;color:var(--text3);">Recording · WAV · 44.1kHz</div>
+          </div>
+          <span class="chip" style="background:rgba(164,123,255,0.12);color:var(--purple);">● REC</span>
+        </div>
+        <div class="waveform-wrap" style="margin-bottom:10px;">
+          <canvas id="wave3" class="waveform-canvas" aria-label="Audio waveform" style="height:56px;"></canvas>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="chip" style="background:rgba(34,201,122,0.12);color:var(--green);"><i class="ti ti-shield-check" aria-hidden="true"></i> Compliant</span>
+          <span class="chip" style="background:rgba(34,201,122,0.12);color:var(--green);"><i class="ti ti-copyright" aria-hidden="true"></i> Clear</span>
+        </div>
+      </div>
+
+      <div id="stream4" class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);">YouTube Live · News Stream</div>
+            <div style="font-size:11px;color:var(--text3);">Streaming · WebRTC · 720p60</div>
+          </div>
+          <div class="live-badge" style="border-color:rgba(245,166,35,0.25);background:rgba(245,166,35,0.08);color:var(--amber);"><div class="live-dot" style="background:var(--amber);animation:none;"></div>DELAY</div>
+        </div>
+        <div class="waveform-wrap" style="margin-bottom:10px;">
+          <canvas id="wave4" class="waveform-canvas" aria-label="Audio waveform" style="height:56px;"></canvas>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="chip" style="background:rgba(245,166,35,0.12);color:var(--amber);"><i class="ti ti-alert-triangle" aria-hidden="true"></i> High Latency</span>
+          <span class="chip" style="background:rgba(85,94,116,0.15);color:var(--text3);">Latency: 8.4s</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live log -->
+    <div class="stream-monitor">
+      <div class="stream-header">
+        <i class="ti ti-terminal-2" style="color:var(--text2);" aria-hidden="true"></i>
+        <span style="font-size:13px;font-weight:600;color:var(--text);">Agent Event Log</span>
+        <span style="font-size:11px;color:var(--text3);margin-left:auto;">Live · Auto-scrolling</span>
+      </div>
+      <div class="stream-body" id="agentLog" style="max-height:260px;overflow-y:auto;">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== INCIDENTS PAGE ===== -->
+  <div class="page" id="page-incidents">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Incident Management</div>
+        <div class="page-sub">7 open incidents · 2 critical</div>
+      </div>
+      <div class="page-actions">
+        <button class="btn"><i class="ti ti-download" aria-hidden="true"></i> Export CSV</button>
+        <button class="btn primary"><i class="ti ti-plus" aria-hidden="true"></i> Log Manual</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="btn primary" style="font-size:11px;padding:5px 12px;">All (7)</button>
+        <button class="btn" style="font-size:11px;padding:5px 12px;color:var(--red);">Critical (2)</button>
+        <button class="btn" style="font-size:11px;padding:5px 12px;color:var(--amber);">Warning (3)</button>
+        <button class="btn" style="font-size:11px;padding:5px 12px;color:var(--green);">Resolved (2)</button>
+        <div style="margin-left:auto;display:flex;gap:8px;">
+          <select style="font-size:11px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:5px 10px;">
+            <option>All Types</option><option>FCC</option><option>Copyright</option><option>Ethics</option><option>EAS</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Timestamp</th><th>Type</th><th>Stream</th><th>Description</th><th>Risk</th><th>Status</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;">#1042</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);">03:47:22</td>
+              <td><span class="incident-tag tag-fcc">FCC</span></td>
+              <td>WXYZ-TV Ch4</td>
+              <td style="color:var(--text);">Indecency §73.3999 – explicit language</td>
+              <td>
+                <div class="score-bar">
+                  <div class="score-track"><div class="score-fill" style="width:92%;background:var(--red);"></div></div>
+                  <div class="score-num" style="color:var(--red);">92</div>
+                </div>
+              </td>
+              <td><span class="chip" style="background:rgba(240,78,89,0.12);color:var(--red);">Critical</span></td>
+              <td><button class="btn" style="font-size:11px;padding:4px 10px;color:var(--red);border-color:rgba(240,78,89,0.3);">Review</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;">#1041</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);">03:12:08</td>
+              <td><span class="incident-tag tag-copy">COPYRIGHT</span></td>
+              <td>WXYZ-FM 97.5</td>
+              <td style="color:var(--text);">ASCAP Track ID #88742 – no license</td>
+              <td>
+                <div class="score-bar">
+                  <div class="score-track"><div class="score-fill" style="width:78%;background:var(--amber);"></div></div>
+                  <div class="score-num" style="color:var(--amber);">78</div>
+                </div>
+              </td>
+              <td><span class="chip" style="background:rgba(245,166,35,0.12);color:var(--amber);">Warning</span></td>
+              <td><button class="btn" style="font-size:11px;padding:4px 10px;">Review</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;">#1040</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);">02:55:44</td>
+              <td><span class="incident-tag tag-ethics">ETHICS</span></td>
+              <td>YouTube News</td>
+              <td style="color:var(--text);">Potential misinformation – unverified claim</td>
+              <td>
+                <div class="score-bar">
+                  <div class="score-track"><div class="score-fill" style="width:65%;background:var(--amber);"></div></div>
+                  <div class="score-num" style="color:var(--amber);">65</div>
+                </div>
+              </td>
+              <td><span class="chip" style="background:rgba(245,166,35,0.12);color:var(--amber);">Warning</span></td>
+              <td><button class="btn" style="font-size:11px;padding:4px 10px;">Review</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;">#1039</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);">02:31:17</td>
+              <td><span class="incident-tag tag-fcc">FCC</span></td>
+              <td>WXYZ-TV Ch4</td>
+              <td style="color:var(--text);">Missing sponsorship ID announcement</td>
+              <td>
+                <div class="score-bar">
+                  <div class="score-track"><div class="score-fill" style="width:55%;background:var(--amber);"></div></div>
+                  <div class="score-num" style="color:var(--amber);">55</div>
+                </div>
+              </td>
+              <td><span class="chip" style="background:rgba(245,166,35,0.12);color:var(--amber);">Warning</span></td>
+              <td><button class="btn" style="font-size:11px;padding:4px 10px;">Review</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;">#1038</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);">01:44:05</td>
+              <td><span class="incident-tag tag-copy">COPYRIGHT</span></td>
+              <td>Podcast</td>
+              <td style="color:var(--text);">BMI background music – license expired</td>
+              <td>
+                <div class="score-bar">
+                  <div class="score-track"><div class="score-fill" style="width:70%;background:var(--amber);"></div></div>
+                  <div class="score-num" style="color:var(--amber);">70</div>
+                </div>
+              </td>
+              <td><span class="chip" style="background:rgba(34,201,122,0.12);color:var(--green);">Resolved</span></td>
+              <td><button class="btn" style="font-size:11px;padding:4px 10px;color:var(--green);">View</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FCC PAGE ===== -->
+  <div class="page" id="page-fcc">
+    <div class="page-header">
+      <div><div class="page-title">FCC Compliance Monitor</div><div class="page-sub">Federal Communications Commission regulatory tracking</div></div>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:20px;">
+      <div class="metric-card">
+        <div class="metric-label">Compliance Rate</div>
+        <div class="metric-value" style="color:var(--green);">97.1%</div>
+        <div class="metric-sub up">30-day rolling average</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Open Violations</div>
+        <div class="metric-value" style="color:var(--red);">2</div>
+        <div class="metric-sub down">Require immediate action</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">License Expiry</div>
+        <div class="metric-value" style="color:var(--amber);">28d</div>
+        <div class="metric-sub">WXYZ-FM renewal pending</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-checklist" aria-hidden="true"></i> FCC Rule Compliance</div></div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;"><span style="color:var(--text2);">§73.3999 Indecency/Obscenity</span><span style="color:var(--red);font-weight:600;">VIOLATION</span></div>
+            <div class="score-track" style="height:8px;"><div class="score-fill" style="width:82%;background:var(--red);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;"><span style="color:var(--text2);">§73.1212 Sponsorship ID</span><span style="color:var(--amber);font-weight:600;">WARNING</span></div>
+            <div class="score-track" style="height:8px;"><div class="score-fill" style="width:55%;background:var(--amber);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;"><span style="color:var(--text2);">§73.670 Children's Programming</span><span style="color:var(--green);font-weight:600;">COMPLIANT</span></div>
+            <div class="score-track" style="height:8px;"><div class="score-fill" style="width:95%;background:var(--green);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;"><span style="color:var(--text2);">§73.1125 Main Studio Requirements</span><span style="color:var(--green);font-weight:600;">COMPLIANT</span></div>
+            <div class="score-track" style="height:8px;"><div class="score-fill" style="width:100%;background:var(--green);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;"><span style="color:var(--text2);">§73.3526 Public Inspection File</span><span style="color:var(--green);font-weight:600;">COMPLIANT</span></div>
+            <div class="score-track" style="height:8px;"><div class="score-fill" style="width:98%;background:var(--green);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;"><span style="color:var(--text2);">§11.35 EAS Equipment</span><span style="color:var(--green);font-weight:600;">COMPLIANT</span></div>
+            <div class="score-track" style="height:8px;"><div class="score-fill" style="width:100%;background:var(--green);"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar" aria-hidden="true"></i> Violations by Category (90 Days)</div></div>
+        <div style="position:relative;height:220px;">
+          <canvas id="fccChart" role="img" aria-label="Pie chart of FCC violations by category">FCC violation breakdown by category over 90 days.</canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== COPYRIGHT PAGE ===== -->
+  <div class="page" id="page-copyright">
+    <div class="page-header">
+      <div><div class="page-title">Copyright Detection</div><div class="page-sub">Music licensing, DMCA, and rights clearance monitoring</div></div>
+    </div>
+
+    <div class="grid-4" style="margin-bottom:20px;">
+      <div class="metric-card">
+        <div class="metric-label">Audio Scanned</div>
+        <div class="metric-value">482h</div>
+        <div class="metric-sub">This month</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Matches Found</div>
+        <div class="metric-value" style="color:var(--amber);">47</div>
+        <div class="metric-sub down">12 unresolved</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Cleared</div>
+        <div class="metric-value" style="color:var(--green);">35</div>
+        <div class="metric-sub up">74.5% resolution rate</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Est. Liability</div>
+        <div class="metric-value" style="color:var(--red);">$24k</div>
+        <div class="metric-sub down">Without remediation</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><i class="ti ti-music" aria-hidden="true"></i> Detected Copyright Material</div>
+        <div style="display:flex;gap:8px;">
+          <select style="font-size:11px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:4px 8px;">
+            <option>All PROs</option><option>ASCAP</option><option>BMI</option><option>SESAC</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Track / Asset</th><th>Artist</th><th>PRO</th><th>Detected At</th><th>Duration</th><th>License Status</th><th>Risk</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--text);">Summer Nights (Radio Edit)</td>
+              <td>Coastal Dreams</td>
+              <td><span class="chip" style="background:rgba(61,127,255,0.12);color:var(--accent2);font-size:10px;">ASCAP</span></td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);">14:22:08</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:11px;">0:36</td>
+              <td><span class="chip" style="background:rgba(240,78,89,0.12);color:var(--red);">No License</span></td>
+              <td><div class="score-bar"><div class="score-track"><div class="score-fill" style="width:88%;background:var(--red);"></div></div><div class="score-num" style="color:var(--red);">88</div></div></td>
+              <td><button class="btn danger" style="font-size:11px;padding:4px 10px;">License Now</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text);">Blues Highway</td>
+              <td>Marcus Cole</td>
+              <td><span class="chip" style="background:rgba(34,201,122,0.12);color:var(--green);font-size:10px;">BMI</span></td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);">09:14:52</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:11px;">1:14</td>
+              <td><span class="chip" style="background:rgba(245,166,35,0.12);color:var(--amber);">Expired</span></td>
+              <td><div class="score-bar"><div class="score-track"><div class="score-fill" style="width:72%;background:var(--amber);"></div></div><div class="score-num" style="color:var(--amber);">72</div></div></td>
+              <td><button class="btn" style="font-size:11px;padding:4px 10px;">Renew</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text);">Morning Drive Theme</td>
+              <td>Studio Session Co.</td>
+              <td><span class="chip" style="background:rgba(164,123,255,0.12);color:var(--purple);font-size:10px;">SESAC</span></td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);">06:58:01</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:11px;">0:45</td>
+              <td><span class="chip" style="background:rgba(34,201,122,0.12);color:var(--green);">Licensed</span></td>
+              <td><div class="score-bar"><div class="score-track"><div class="score-fill" style="width:10%;background:var(--green);"></div></div><div class="score-num" style="color:var(--green);">10</div></div></td>
+              <td><button class="btn" style="font-size:11px;padding:4px 10px;">View</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ETHICS PAGE ===== -->
+  <div class="page" id="page-ethics">
+    <div class="page-header">
+      <div><div class="page-title">Ethical AI Review</div><div class="page-sub">Misinformation, deepfake detection, and journalistic integrity analysis</div></div>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:20px;">
+      <div class="metric-card">
+        <div class="metric-label">Segments Analyzed</div>
+        <div class="metric-value">1,240</div>
+        <div class="metric-sub">Today</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Misinfo Flags</div>
+        <div class="metric-value" style="color:var(--amber);">3</div>
+        <div class="metric-sub">Pending verification</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Deepfake Score</div>
+        <div class="metric-value" style="color:var(--green);">Low</div>
+        <div class="metric-sub up">0 detections today</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-news" aria-hidden="true"></i> Journalistic Integrity Scores</div></div>
+        <div style="position:relative;height:220px;">
+          <canvas id="ethicsChart" role="img" aria-label="Radar chart of journalistic integrity metrics">Journalistic integrity scores across multiple dimensions.</canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Recent Flags</div></div>
+        <div>
+          <div class="incident-item">
+            <div class="incident-dot dot-amber"></div>
+            <div class="incident-body">
+              <div class="incident-title">Unverified economic claim – YouTube 02:55</div>
+              <div class="incident-meta">Confidence: 73% · Source: Misinformation Agent</div>
+            </div>
+            <span class="incident-tag tag-ethics">MISINFO</span>
+          </div>
+          <div class="incident-item">
+            <div class="incident-dot dot-amber"></div>
+            <div class="incident-body">
+              <div class="incident-title">Potentially biased framing – WXYZ-TV 01:22</div>
+              <div class="incident-meta">Confidence: 68% · Source: Ethics Agent</div>
+            </div>
+            <span class="incident-tag tag-ethics">BIAS</span>
+          </div>
+          <div class="incident-item">
+            <div class="incident-dot dot-green"></div>
+            <div class="incident-body">
+              <div class="incident-title">Deepfake scan – Podcast segment 08:00–08:45</div>
+              <div class="incident-meta">No manipulation detected · Confidence: 99%</div>
+            </div>
+            <span class="incident-tag tag-ok">CLEAR</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EAS PAGE ===== -->
+  <div class="page" id="page-eas">
+    <div class="page-header">
+      <div><div class="page-title">Emergency Alert System (EAS)</div><div class="page-sub">FCC §11 compliance – alert relay and logging</div></div>
+    </div>
+
+    <div class="alert-banner amber">
+      <i class="ti ti-info-circle" aria-hidden="true"></i>
+      <div class="alert-banner-text">
+        <strong>Monthly EAS Test Due</strong>
+        Required Monthly Test (RMT) has not been logged for the July cycle. Test must be conducted and logged before July 31.
+      </div>
+      <button class="btn" style="flex-shrink:0;font-size:11px;">Schedule Test</button>
+    </div>
+
+    <div class="grid-4" style="margin-bottom:20px;">
+      <div class="metric-card">
+        <div class="metric-label">EAS Status</div>
+        <div class="metric-value" style="color:var(--green);font-size:18px;">OPERATIONAL</div>
+        <div class="metric-sub up">Equipment online</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Alerts Relayed</div>
+        <div class="metric-value">14</div>
+        <div class="metric-sub">Last 30 days</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Required Tests</div>
+        <div class="metric-value" style="color:var(--amber);">1</div>
+        <div class="metric-sub down">Pending (RMT July)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Avg Relay Time</div>
+        <div class="metric-value">1.2s</div>
+        <div class="metric-sub up">Under 2s threshold</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="ti ti-sos" aria-hidden="true"></i> Alert Relay Log</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date/Time</th><th>Alert Type</th><th>FIPS Code</th><th>Duration</th><th>Relay Time</th><th>Source</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);">2026-06-23 14:32</td>
+              <td style="color:var(--text);">Tornado Warning (TOR)</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:11px;">048113</td>
+              <td>3:45</td>
+              <td style="color:var(--green);">0.9s</td>
+              <td>NWS</td>
+              <td><span class="chip" style="background:rgba(34,201,122,0.12);color:var(--green);">Relayed</span></td>
+            </tr>
+            <tr>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);">2026-06-20 09:15</td>
+              <td style="color:var(--text);">Flash Flood Watch (FFW)</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:11px;">048201</td>
+              <td>6:00</td>
+              <td style="color:var(--green);">1.1s</td>
+              <td>NWS</td>
+              <td><span class="chip" style="background:rgba(34,201,122,0.12);color:var(--green);">Relayed</span></td>
+            </tr>
+            <tr>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);">2026-06-15 —</td>
+              <td style="color:var(--text);">Required Monthly Test (RMT)</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:11px;">—</td>
+              <td>—</td>
+              <td style="color:var(--red);">—</td>
+              <td>Scheduled</td>
+              <td><span class="chip" style="background:rgba(245,166,35,0.12);color:var(--amber);">Pending</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== AGENTS PAGE ===== -->
+  <div class="page" id="page-agents">
+    <div class="page-header">
+      <div><div class="page-title">AI Agent Management</div><div class="page-sub">8 agents active · Multi-agent orchestration via LangGraph</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div id="agentCards"></div>
+      <div class="card" style="align-self:start;">
+        <div class="card-header"><div class="card-title"><i class="ti ti-chart-line" aria-hidden="true"></i> Agent Activity (Last Hour)</div></div>
+        <div style="position:relative;height:200px;">
+          <canvas id="agentActivityChart" role="img" aria-label="Line chart of agent activity">Agent task completions per agent over the last hour.</canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== REPORTS PAGE ===== -->
+  <div class="page" id="page-reports">
+    <div class="page-header">
+      <div><div class="page-title">Executive Reports</div><div class="page-sub">Automated compliance reporting and analytics</div></div>
+      <div class="page-actions">
+        <button class="btn primary" onclick="exportReport()"><i class="ti ti-download" aria-hidden="true"></i> Generate PDF</button>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar" aria-hidden="true"></i> Monthly Compliance Trend</div></div>
+        <div style="position:relative;height:220px;">
+          <canvas id="trendChart" role="img" aria-label="Line chart of monthly compliance score trend">Monthly compliance score from Jan to June.</canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-file-analytics" aria-hidden="true"></i> Available Reports</div></div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--bg3);border-radius:var(--radius);cursor:pointer;" onclick="exportReport()">
+            <i class="ti ti-file-text" style="font-size:22px;color:var(--accent2);" aria-hidden="true"></i>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--text);">Monthly FCC Compliance Summary</div><div style="font-size:11px;color:var(--text3);">Generated Jun 23, 2026</div></div>
+            <i class="ti ti-download" style="color:var(--text3);" aria-hidden="true"></i>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--bg3);border-radius:var(--radius);cursor:pointer;" onclick="exportReport()">
+            <i class="ti ti-file-text" style="font-size:22px;color:var(--purple);" aria-hidden="true"></i>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--text);">Copyright & Licensing Audit</div><div style="font-size:11px;color:var(--text3);">Generated Jun 20, 2026</div></div>
+            <i class="ti ti-download" style="color:var(--text3);" aria-hidden="true"></i>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--bg3);border-radius:var(--radius);cursor:pointer;" onclick="exportReport()">
+            <i class="ti ti-file-text" style="font-size:22px;color:var(--amber);" aria-hidden="true"></i>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--text);">Q2 Executive Compliance Report</div><div style="font-size:11px;color:var(--text3);">Generated Jun 15, 2026</div></div>
+            <i class="ti ti-download" style="color:var(--text3);" aria-hidden="true"></i>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--bg3);border-radius:var(--radius);cursor:pointer;" onclick="exportReport()">
+            <i class="ti ti-file-text" style="font-size:22px;color:var(--teal);" aria-hidden="true"></i>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--text);">EAS Relay Log – June 2026</div><div style="font-size:11px;color:var(--text3);">Generated Jun 23, 2026</div></div>
+            <i class="ti ti-download" style="color:var(--text3);" aria-hidden="true"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== AUDIT PAGE ===== -->
+  <div class="page" id="page-audit">
+    <div class="page-header">
+      <div><div class="page-title">Audit Log</div><div class="page-sub">Immutable system event log · SOC 2 compliant</div></div>
+    </div>
+
+    <div class="stream-monitor">
+      <div class="stream-header">
+        <i class="ti ti-list-check" style="color:var(--text2);" aria-hidden="true"></i>
+        <span style="font-size:13px;font-weight:600;color:var(--text);">System Audit Events</span>
+        <span style="font-size:11px;color:var(--green);margin-left:auto;display:flex;align-items:center;gap:5px;"><i class="ti ti-lock" aria-hidden="true"></i> Tamper-Evident</span>
+      </div>
+      <div class="stream-body" id="auditLog" style="max-height:500px;overflow-y:auto;">
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SETTINGS PAGE ===== -->
+  <div class="page" id="page-settings">
+    <div class="page-header">
+      <div><div class="page-title">Platform Settings</div><div class="page-sub">Configure agents, thresholds, and integrations</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-cpu" aria-hidden="true"></i> Agent Configuration</div></div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="font-size:13px;color:var(--text);">FCC Sensitivity Threshold</span>
+              <span id="fccThreshVal" style="font-size:12px;font-weight:600;color:var(--accent2);">75</span>
+            </div>
+            <input type="range" min="1" max="100" value="75" step="1" oninput="document.getElementById('fccThreshVal').textContent=this.value" style="width:100%;">
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="font-size:13px;color:var(--text);">Copyright Confidence Minimum</span>
+              <span id="copyThreshVal" style="font-size:12px;font-weight:600;color:var(--accent2);">80</span>
+            </div>
+            <input type="range" min="1" max="100" value="80" step="1" oninput="document.getElementById('copyThreshVal').textContent=this.value" style="width:100%;">
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="font-size:13px;color:var(--text);">Misinformation Alert Level</span>
+              <span id="misinfoThreshVal" style="font-size:12px;font-weight:600;color:var(--accent2);">65</span>
+            </div>
+            <input type="range" min="1" max="100" value="65" step="1" oninput="document.getElementById('misinfoThreshVal').textContent=this.value" style="width:100%;">
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="font-size:13px;color:var(--text);">Auto-Mute on FCC Violation</span>
+              <label style="position:relative;display:inline-block;width:38px;height:20px;">
+                <input type="checkbox" checked style="opacity:0;width:0;height:0;">
+                <span style="position:absolute;cursor:pointer;inset:0;background:var(--accent);border-radius:20px;"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-plug" aria-hidden="true"></i> Integrations</div></div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--border);border-radius:var(--radius);">
+            <i class="ti ti-database" style="font-size:20px;color:var(--accent2);" aria-hidden="true"></i>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--text);">FCC License Database</div><div style="font-size:11px;color:var(--green);">Connected · Last sync: 2m ago</div></div>
+            <span class="chip" style="background:rgba(34,201,122,0.12);color:var(--green);">Active</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--border);border-radius:var(--radius);">
+            <i class="ti ti-music" style="font-size:20px;color:var(--purple);" aria-hidden="true"></i>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--text);">ASCAP / BMI / SESAC API</div><div style="font-size:11px;color:var(--green);">Connected · Real-time lookup</div></div>
+            <span class="chip" style="background:rgba(34,201,122,0.12);color:var(--green);">Active</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--border);border-radius:var(--radius);">
+            <i class="ti ti-sos" style="font-size:20px;color:var(--red);" aria-hidden="true"></i>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--text);">FEMA IPAWS EAS</div><div style="font-size:11px;color:var(--green);">Connected · Alert relay active</div></div>
+            <span class="chip" style="background:rgba(34,201,122,0.12);color:var(--green);">Active</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--border);border-radius:var(--radius);">
+            <i class="ti ti-cloud" style="font-size:20px;color:var(--text3);" aria-hidden="true"></i>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--text);">AWS S3 Archive</div><div style="font-size:11px;color:var(--amber);">Configure credentials</div></div>
+            <button class="btn" style="font-size:11px;padding:4px 10px;">Connect</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ===== CLOCK =====
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getUTCHours()).padStart(2,'0');
+  const m = String(now.getUTCMinutes()).padStart(2,'0');
+  const s = String(now.getUTCSeconds()).padStart(2,'0');
+  document.getElementById('headerClock').textContent = `${h}:${m}:${s} UTC`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ===== NAVIGATION =====
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const el = document.getElementById('page-' + page);
+  const nav = document.getElementById('nav-' + page);
+  if (el) el.classList.add('active');
+  if (nav) nav.classList.add('active');
+  // Lazy init charts on navigate
+  setTimeout(() => initChartsForPage(page), 100);
+}
+
+// ===== INCIDENTS =====
+const incidents = [
+  { level:'red', title:'FCC §73.3999 – Indecency violation', meta:'WXYZ-TV Ch4 · 03:47:22 UTC', tag:'tag-fcc', tagLabel:'FCC' },
+  { level:'red', title:'ASCAP match – No license on file', meta:'WXYZ-FM 97.5 · 03:12:08 UTC', tag:'tag-copy', tagLabel:'COPYRIGHT' },
+  { level:'amber', title:'Unverified claim flagged', meta:'YouTube Live · 02:55:44 UTC', tag:'tag-ethics', tagLabel:'ETHICS' },
+  { level:'amber', title:'Missing sponsorship announcement', meta:'WXYZ-TV Ch4 · 02:31:17 UTC', tag:'tag-fcc', tagLabel:'FCC' },
+  { level:'green', title:'BMI license renewal processed', meta:'Podcast · 01:44:05 UTC', tag:'tag-ok', tagLabel:'RESOLVED' },
+];
+
+function renderIncidents() {
+  const el = document.getElementById('incidentList');
+  if (!el) return;
+  el.innerHTML = incidents.map(i => `
+    <div class="incident-item">
+      <div class="incident-dot dot-${i.level}"></div>
+      <div class="incident-body">
+        <div class="incident-title">${i.title}</div>
+        <div class="incident-meta">${i.meta}</div>
+      </div>
+      <span class="incident-tag ${i.tag}">${i.tagLabel}</span>
+    </div>
+  `).join('');
+}
+
+// ===== AGENTS =====
+const agents = [
+  { icon:'ti-shield-check', color:'var(--accent2)', bg:'rgba(61,127,255,0.12)', name:'Compliance Agent', task:'Monitoring §73.3999 – WXYZ-TV Ch4', status:'alert', statusLabel:'ALERT' },
+  { icon:'ti-copyright', color:'var(--purple)', bg:'rgba(164,123,255,0.12)', name:'Copyright Agent', task:'ASCAP fingerprinting – Stream 1, 3', status:'analyzing', statusLabel:'ANALYZING' },
+  { icon:'ti-eye-check', color:'var(--amber)', bg:'rgba(245,166,35,0.12)', name:'Ethical Review Agent', task:'Fact-checking YouTube segment', status:'analyzing', statusLabel:'ANALYZING' },
+  { icon:'ti-search', color:'var(--teal)', bg:'rgba(29,213,176,0.12)', name:'Misinformation Agent', task:'Cross-referencing claim #1040', status:'active', statusLabel:'ACTIVE' },
+  { icon:'ti-sos', color:'var(--red)', bg:'rgba(240,78,89,0.12)', name:'Emergency Agent', task:'EAS relay monitoring – standby', status:'active', statusLabel:'ACTIVE' },
+  { icon:'ti-bulb', color:'var(--green)', bg:'rgba(34,201,122,0.12)', name:'Recommendation Agent', task:'Drafting 3 new recommendations', status:'active', statusLabel:'ACTIVE' },
+  { icon:'ti-list-check', color:'var(--text2)', bg:'rgba(85,94,116,0.15)', name:'Audit Agent', task:'Logging incident #1042', status:'active', statusLabel:'ACTIVE' },
+  { icon:'ti-file-analytics', color:'var(--amber)', bg:'rgba(245,166,35,0.12)', name:'Reporting Agent', task:'Idle – next report 06:00 UTC', status:'idle', statusLabel:'IDLE' },
+];
+
+function renderAgentRows() {
+  const left = document.getElementById('agentListLeft');
+  const right = document.getElementById('agentListRight');
+  if (!left || !right) return;
+  const half = Math.ceil(agents.length / 2);
+  [left, right].forEach((el, gi) => {
+    el.innerHTML = agents.slice(gi*half, (gi+1)*half).map(a => `
+      <div class="agent-row">
+        <div class="agent-icon" style="background:${a.bg};color:${a.color};"><i class="ti ${a.icon}" aria-hidden="true"></i></div>
+        <div class="agent-info">
+          <div class="agent-name">${a.name}</div>
+          <div class="agent-task">${a.task}</div>
+        </div>
+        <span class="agent-status status-${a.status}">${a.statusLabel}</span>
+      </div>
+    `).join('');
+  });
+}
+
+function renderAgentCards() {
+  const el = document.getElementById('agentCards');
+  if (!el) return;
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px;">` +
+    agents.map(a => `
+      <div class="card" style="padding:14px 16px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:40px;height:40px;border-radius:10px;background:${a.bg};color:${a.color};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;"><i class="ti ${a.icon}" aria-hidden="true"></i></div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;">${a.name}</div>
+            <div style="font-size:11px;color:var(--text3);">${a.task}</div>
+          </div>
+          <span class="agent-status status-${a.status}">${a.statusLabel}</span>
+        </div>
+      </div>
+    `).join('') + `</div>`;
+}
+
+// ===== LOG STREAM =====
+const logMessages = [
+  { level:'ok', msg:'FCC Agent: Stream 1 (WXYZ-FM) – No violations detected in segment 482' },
+  { level:'error', msg:'FCC Agent: CRITICAL – §73.3999 violation detected in WXYZ-TV Ch4 at 03:47:22' },
+  { level:'warn', msg:'Copyright Agent: ASCAP fingerprint match #88742 on stream 1 – license status INVALID' },
+  { level:'info', msg:'Misinformation Agent: Analyzing YouTube segment 02:55 – cross-referencing 14 sources' },
+  { level:'ok', msg:'EAS Agent: Alert relay confirmed – Tornado Warning TOR 048113 relayed in 0.9s' },
+  { level:'info', msg:'Recommendation Agent: Generated 3 new compliance recommendations' },
+  { level:'warn', msg:'Ethics Agent: Potential bias detected in framing (confidence: 68%) – WXYZ-TV 01:22' },
+  { level:'ok', msg:'Audit Agent: Incident #1042 logged to immutable ledger' },
+  { level:'info', msg:'Copyright Agent: BMI scan complete – 1 match (licensed), 0 violations' },
+  { level:'ok', msg:'Compliance Agent: WXYZ-FM 97.5 – 4h continuous monitoring, compliance score 98.2' },
+];
+
+let logIndex = 0;
+function addLogEntry() {
+  const log = document.getElementById('agentLog');
+  if (!log) return;
+  const entry = logMessages[logIndex % logMessages.length];
+  logIndex++;
+  const now = new Date();
+  const ts = `${String(now.getUTCHours()).padStart(2,'0')}:${String(now.getUTCMinutes()).padStart(2,'0')}:${String(now.getUTCSeconds()).padStart(2,'0')}`;
+  const div = document.createElement('div');
+  div.className = 'stream-log-item';
+  div.innerHTML = `<span class="log-time">${ts}</span><span class="log-level ${entry.level}">${entry.level.toUpperCase()}</span><span class="log-msg">${entry.msg}</span>`;
+  log.appendChild(div);
+  if (log.children.length > 30) log.removeChild(log.firstChild);
+  log.scrollTop = log.scrollHeight;
+}
+
+const auditEvents = [
+  { level:'info', msg:'User admin@wxyz.com authenticated via SSO (OAuth 2.0)' },
+  { level:'ok', msg:'Agent orchestration started – 8 agents initialized' },
+  { level:'error', msg:'Incident #1042 created: FCC §73.3999 violation – WXYZ-TV Ch4 – auto-mute applied' },
+  { level:'warn', msg:'Incident #1041 created: Copyright infringement risk – ASCAP #88742' },
+  { level:'ok', msg:'EAS relay logged: TOR 048113 – relay time 0.9s' },
+  { level:'info', msg:'Agent memory checkpoint written – vector store updated' },
+  { level:'ok', msg:'BMI license renewal processed for track ID #44120' },
+  { level:'info', msg:'RAG knowledge base synchronized: FCC Part 73 (Rev. 2026-Q2)' },
+  { level:'warn', msg:'License expiry alert: WXYZ-FM expires in 28 days' },
+  { level:'ok', msg:'Monthly compliance report generated and archived (SHA-256: a3f1...)' },
+];
+
+function renderAuditLog() {
+  const log = document.getElementById('auditLog');
+  if (!log || log.children.length > 0) return;
+  auditEvents.forEach(entry => {
+    const now = new Date();
+    const ts = `${String(now.getUTCHours()).padStart(2,'0')}:${String(now.getUTCMinutes()).padStart(2,'0')}:${String(now.getUTCSeconds()).padStart(2,'0')}`;
+    const div = document.createElement('div');
+    div.className = 'stream-log-item';
+    div.innerHTML = `<span class="log-time">${ts}</span><span class="log-level ${entry.level}">${entry.level.toUpperCase()}</span><span class="log-msg">${entry.msg}</span>`;
+    log.appendChild(div);
+  });
+}
+
+// ===== WAVEFORM ANIMATION =====
+function drawWaveform(canvasId, color) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.offsetWidth;
+  const H = 56;
+  canvas.width = W; canvas.height = H;
+  let phase = Math.random() * 100;
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.beginPath();
+    ctx.moveTo(0, H/2);
+    for (let x = 0; x < W; x++) {
+      const amp = 18 + 8 * Math.sin(x * 0.03 + phase * 0.5);
+      const y = H/2 + amp * Math.sin(x * 0.05 + phase) * 0.7
+              + (amp * 0.4) * Math.sin(x * 0.13 + phase * 1.3);
+      ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    phase += 0.06;
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ===== CHARTS =====
+let chartsInitialized = {};
+
+function initChartsForPage(page) {
+  if (chartsInitialized[page]) return;
+  chartsInitialized[page] = true;
+
+  if (page === 'dashboard') {
+    new Chart(document.getElementById('violationChart'), {
+      type: 'bar',
+      data: {
+        labels: ['12am','1am','2am','3am','4am','5am','6am','7am','8am','9am','10am','11am'],
+        datasets: [
+          { label: 'FCC', data: [0,0,1,3,1,0,0,0,1,0,0,0], backgroundColor: 'rgba(240,78,89,0.7)', borderRadius: 4 },
+          { label: 'Copyright', data: [1,2,1,0,1,2,1,0,1,2,1,0], backgroundColor: 'rgba(164,123,255,0.6)', borderRadius: 4 },
+          { label: 'Ethics', data: [0,1,0,1,0,0,1,0,0,1,0,0], backgroundColor: 'rgba(245,166,35,0.6)', borderRadius: 4 },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { stacked: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#555e74', font: { size: 10 } } },
+          y: { stacked: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#555e74', font: { size: 10 }, stepSize: 1 } }
+        }
+      }
+    });
+  }
+
+  if (page === 'fcc') {
+    new Chart(document.getElementById('fccChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Indecency', 'Sponsorship ID', 'Children\'s TV', 'EAS', 'Other'],
+        datasets: [{ data: [42, 28, 12, 8, 10], backgroundColor: ['#f04e59','#f5a623','#a47bff','#3d7fff','#555e74'], borderWidth: 0, hoverOffset: 4 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#8a92a8', font: { size: 11 }, padding: 12, boxWidth: 10, boxHeight: 10 } }
+        }
+      }
+    });
+  }
+
+  if (page === 'ethics') {
+    new Chart(document.getElementById('ethicsChart'), {
+      type: 'radar',
+      data: {
+        labels: ['Accuracy', 'Balance', 'Source Quality', 'Attribution', 'Transparency', 'Fairness'],
+        datasets: [{
+          label: 'Station Score',
+          data: [88, 72, 91, 85, 78, 80],
+          fill: true,
+          backgroundColor: 'rgba(61,127,255,0.15)',
+          borderColor: '#3d7fff',
+          pointBackgroundColor: '#3d7fff',
+          borderWidth: 2,
+        },{
+          label: 'Industry Avg',
+          data: [75, 70, 80, 75, 72, 74],
+          fill: true,
+          backgroundColor: 'rgba(164,123,255,0.08)',
+          borderColor: 'rgba(164,123,255,0.5)',
+          pointBackgroundColor: '#a47bff',
+          borderWidth: 1.5,
+          borderDash: [4, 3],
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#8a92a8', font: { size: 11 }, boxWidth: 10, boxHeight: 10 } } },
+        scales: { r: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#555e74', font: { size: 9 }, backdropColor: 'transparent', stepSize: 20 }, pointLabels: { color: '#8a92a8', font: { size: 10 } }, min: 0, max: 100 } }
+      }
+    });
+  }
+
+  if (page === 'agents') {
+    new Chart(document.getElementById('agentActivityChart'), {
+      type: 'line',
+      data: {
+        labels: Array.from({length:12},(_,i)=>i*5+'m'),
+        datasets: [
+          { label:'FCC', data:[4,6,5,8,12,7,5,6,8,10,9,7], borderColor:'#f04e59', tension:0.4, borderWidth:2, pointRadius:0, fill:false },
+          { label:'Copyright', data:[2,3,5,4,6,5,7,4,3,5,6,8], borderColor:'#a47bff', tension:0.4, borderWidth:2, pointRadius:0, fill:false },
+          { label:'Ethics', data:[1,2,1,3,2,1,2,3,2,1,2,1], borderColor:'#f5a623', tension:0.4, borderWidth:2, pointRadius:0, fill:false },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color:'#8a92a8', font:{size:11}, boxWidth:10, boxHeight:10 } } },
+        scales: { x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#555e74',font:{size:10}}}, y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#555e74',font:{size:10}}} }
+      }
+    });
+  }
+
+  if (page === 'reports') {
+    new Chart(document.getElementById('trendChart'), {
+      type: 'line',
+      data: {
+        labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+        datasets: [{
+          label:'Compliance Score',
+          data: [88.4, 90.1, 91.8, 92.4, 93.7, 94.2],
+          borderColor:'#22c97a', backgroundColor:'rgba(34,201,122,0.08)',
+          fill:true, tension:0.4, borderWidth:2.5, pointBackgroundColor:'#22c97a', pointRadius:4
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#555e74',font:{size:11}} },
+          y: { min:85, max:100, grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#555e74',font:{size:11}} }
+        }
+      }
+    });
+  }
+}
+
+// ===== EXPORT =====
+function exportReport() {
+  const content = `BroadcastGuard AI – Compliance Report
+Generated: ${new Date().toISOString()}
+Station: WXYZ-FM 97.5 / WXYZ-TV Ch4
+
+SUMMARY
+=======
+Compliance Score: 94.2 / 100
+Active Violations: 7
+Copyright Flags: 12
+Hours Monitored: 482
+
+INCIDENTS
+=========
+#1042 | 03:47:22 | FCC §73.3999 Indecency | WXYZ-TV Ch4 | Risk: 92 | CRITICAL
+#1041 | 03:12:08 | ASCAP Copyright – No License | WXYZ-FM | Risk: 78 | WARNING
+#1040 | 02:55:44 | Misinformation Flag | YouTube | Risk: 65 | WARNING
+#1039 | 02:31:17 | Missing Sponsorship ID | WXYZ-TV | Risk: 55 | WARNING
+#1038 | 01:44:05 | BMI License Expired | Podcast | Risk: 70 | RESOLVED
+
+RECOMMENDATIONS
+===============
+1. Replace unlicensed background music – segment 14:22-14:58 (ASCAP #88742)
+2. File FCC Form 2100 license renewal – expires in 28 days
+3. Schedule EAS Required Monthly Test for July cycle
+
+---
+Generated by BroadcastGuard AI Reporting Agent
+Anthropic Claude · Agentic Compliance Platform`;
+
+  const blob = new Blob([content], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `BroadcastGuard_Report_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+}
+
+// ===== INIT =====
+renderIncidents();
+renderAgentRows();
+renderAgentCards();
+renderAuditLog();
+
+// Init dashboard charts
+setTimeout(() => {
+  initChartsForPage('dashboard');
+  drawWaveform('wave1', '#22c97a');
+  drawWaveform('wave2', '#f04e59');
+  drawWaveform('wave3', '#a47bff');
+  drawWaveform('wave4', '#f5a623');
+}, 200);
+
+// Start agent log stream
+setInterval(addLogEntry, 2800);
+addLogEntry();
+</script>
+</body>
+</html>
